@@ -37,11 +37,8 @@ func MACRO_NUM_DATA_POINTERS() int {
 	return int(C.MACRO_NUM_DATA_POINTERS())
 }
 
-// Metadatap returns metadatap.
-//
-// C-Function: avpriv_frame_get_metadatap
 func (f *Frame) Metadatap() **Dictionary {
-	return (**Dictionary)(unsafe.Pointer(C.avpriv_frame_get_metadatap((*C.struct_AVFrame)(unsafe.Pointer(f)))))
+	return (**Dictionary)(f.metadata)
 }
 
 // SetQpTable sets the qp table.
