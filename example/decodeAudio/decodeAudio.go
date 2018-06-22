@@ -9,7 +9,7 @@ import (
 	"math"
 	"os"
 
-	"github.com/targodan/native"
+	"github.com/jimyx17/native"
 
 	"gopkg.in/targodan/ffgopeg.v1/avcodec"
 	"gopkg.in/targodan/ffgopeg.v1/avformat"
