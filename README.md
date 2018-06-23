@@ -2,26 +2,18 @@
 
 This go library provides bindings for ffmpeg.
 Its main goal is to make the ffmpeg library accessable in a way that feels natural in the go language.
-This library is based on [giorgisio/goav](https://github.com/giorgisio/goav) and will differ in the following ways.
+This library is based on [targodan/ffgopeg](https://github.com/targodan/ffgopeg) and will differ in the following ways.
 
-- Target ffmpeg version: 3.1.n
-- No deprecated functions.
-- OOP-Style where applicable, see [Mapping ffmpeg function names to go](#mapping-ffmpeg-function-names-to-go).
+- Target ffmpeg version: 4.0
+- No unnecesary go castings added.
 - Renaming of functions to make sense in the go context, again see [Mapping ffmpeg function names to go](#mapping-ffmpeg-function-names-to-go).
-- I merged some pending pull request on the original.
 
 ## Current state
 
-TL; DR: *not stable*
+TL; DR: *not stable (only playing with the lib and cgo)*
 
-The renaming of funcitons is mostly complete.
-Although I have released version 1 I wouldn't call it stable yet.
-It is largely untested and many functions may not work as intended (meaning propable segmentation faults).
 If you discover any errors and/or have functions that are missing feel free to [contribute](#contribute)! :grinning:
 
-If you just want to decode audio files into `float32` samples [this project of mine](https://github.com/jimyx17/goad) could be for you.
-It provides a high level API for just that usecase, based on the ffgopeg library.
-A first version is going to come soon but feel free to checkout the develop-branch in the meantime ("checkout"... get it? :laughing:).
 
 ## Usage
 
@@ -35,12 +27,12 @@ This will install the latest version 1.n.m release.
 See [Versioning](#versioning).
 
 The ffmpeg libraries are in theire own packages.
-If you know which ffmpeg function you want to use you can use [this little webtool](https://targodan.github.io/ffgopeg)
+If you know which ffmpeg function you want to use you can use [this little webtool](https://targodan.github.io/ffgopeg). This really useful comes from the original author of ffgopeg. So it might differ slightly from this lib
 
 ## Versioning
 
 This project follows the [semantic versioning scheme](http://semver.org/).
-That means if you use the `gopkg.in` link from above using `go get -u` should be safe and not break anything.
+That means if you use the `github.com` link from above using `go get -u` should be safe and not break anything.
 
 ## Mapping ffmpeg function names to go
 
