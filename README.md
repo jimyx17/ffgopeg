@@ -28,7 +28,7 @@ A first version is going to come soon but feel free to checkout the develop-bran
 Installing or updating.
 
 ```
-go get -u gopkg.in/targodan/ffgopeg.v1
+go get -u github.com/jimyx17/ffgopeg
 ```
 
 This will install the latest version 1.n.m release.

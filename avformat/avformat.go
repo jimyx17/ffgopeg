@@ -22,7 +22,7 @@ import "C"
 import (
 	"unsafe"
 
-	"gopkg.in/targodan/ffgopeg.v1/avutil"
+	"github.com/jimyx17/ffgopeg/avutil"
 )
 
 type (

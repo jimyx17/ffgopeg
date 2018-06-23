@@ -38,7 +38,7 @@ func MACRO_NUM_DATA_POINTERS() int {
 }
 
 func (f *Frame) Metadatap() **Dictionary {
-	return (**Dictionary)(f.metadata)
+	return (**Dictionary)(unsafe.Pointer(&(f.metadata)))
 }
 
 // SetQpTable sets the qp table.

@@ -28,4 +28,5 @@ _testmain.go
 
 *.h.gch
 
-deployKey
+
+.vscode/launch.json

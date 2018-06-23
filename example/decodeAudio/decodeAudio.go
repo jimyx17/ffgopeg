@@ -6,14 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"os"
+	"unsafe"
 
-	"github.com/jimyx17/native"
-
-	"gopkg.in/targodan/ffgopeg.v1/avcodec"
-	"gopkg.in/targodan/ffgopeg.v1/avformat"
-	"gopkg.in/targodan/ffgopeg.v1/avutil"
+	"github.com/jimyx17/ffgopeg/avcodec"
+	"github.com/jimyx17/ffgopeg/avformat"
+	"github.com/jimyx17/ffgopeg/avutil"
 )
 
 const rawOutOnPlanar = true
@@ -107,24 +105,6 @@ func handleFrame(codecCtxt *avcodec.CodecContext, frame *avutil.Frame, out io.Wr
 func getSample(codecCtxt *avcodec.CodecContext, buffer []byte, sampleIndex int) float32 {
 	sampleSize := codecCtxt.SampleFmt().BytesPerSample()
 	byteIndex := sampleSize * sampleIndex
-	var val int64
-	switch sampleSize {
-	case 1:
-		// 8bit samples are always unsigned
-		val = int64(buffer[byteIndex]) - 127
-
-	case 2:
-		val = int64(int16(native.ByteOrder.Uint16(buffer[byteIndex : byteIndex+sampleSize])))
-
-	case 4:
-		val = int64(int32(native.ByteOrder.Uint32(buffer[byteIndex : byteIndex+sampleSize])))
-
-	case 8:
-		val = int64(native.ByteOrder.Uint64(buffer[byteIndex : byteIndex+sampleSize]))
-
-	default:
-		panic(fmt.Sprintf("Invalid sample size %d.", sampleSize))
-	}
 
 	var ret float32
 	switch codecCtxt.SampleFmt() {
@@ -134,21 +114,21 @@ func getSample(codecCtxt *avcodec.CodecContext, buffer []byte, sampleIndex int) 
 		avutil.AV_SAMPLE_FMT_U8P,
 		avutil.AV_SAMPLE_FMT_S16P,
 		avutil.AV_SAMPLE_FMT_S32P:
-		// integer => Scale to [-1, 1] and convert to float.
+		val := Float32frombits(buffer[byteIndex : byteIndex+sampleSize])
 		div := ((1 << (uint(sampleSize)*8 - 1)) - 1)
-		ret = float32(val) / float32(div)
+		ret = val / float32(div)
 		break
 
 	case avutil.AV_SAMPLE_FMT_FLT,
 		avutil.AV_SAMPLE_FMT_FLTP:
 		// float => reinterpret
-		ret = math.Float32frombits(uint32(val))
+		ret = Float32frombits(buffer[byteIndex : byteIndex+sampleSize])
 		break
 
 	case avutil.AV_SAMPLE_FMT_DBL,
 		avutil.AV_SAMPLE_FMT_DBLP:
 		// double => reinterpret and then static cast down
-		ret = float32(math.Float64frombits(uint64(val)))
+		ret = float32(Float64frombits(buffer[byteIndex : byteIndex+sampleSize]))
 		break
 
 	default:
@@ -286,4 +266,26 @@ func main() {
 	drainDecoder(codecCtxt, frame, bufFile)
 
 	// Cleaning up is done by the go defer statements.
+}
+
+// Float32frombits returns the floating point number corresponding
+// to the IEEE 754 binary representation b.
+func Float32frombits(b []byte) float32 {
+	// would be much faster to copy blocks, like the for bytes
+	// at the same time, but...
+	copy := make([]byte, len(b))
+	for i, v := range b {
+		copy[i] = v
+	}
+	return *(*float32)(unsafe.Pointer(&copy[0]))
+}
+
+// Float64frombits returns the floating point number corresponding
+// the IEEE 754 binary representation b.
+func Float64frombits(b []byte) float64 {
+	copy := make([]byte, len(b))
+	for i, v := range b {
+		copy[i] = v
+	}
+	return *(*float64)(unsafe.Pointer(&copy[0]))
 }
